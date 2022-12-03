@@ -17,11 +17,10 @@ const encrypted_list = fs.readFileSync("./input.txt").toString().trimEnd() // tr
 // This can be managed by making an increment function, which
 // overflows in 3 and starts in 1.
 
-function wins(n) {
+function inc(n) {
   if (n >= 3) return 1;
   else return n + 1;
 }
-// we alias the increment function "wins" for readability.
 
 const map_plays = {
   'A': 1, // rock
@@ -35,7 +34,7 @@ const map_plays = {
 // note that the mapping also matches with each play's score.
 
 function round_score(play, response) {
-  return response + 6 * (response === wins(play)) + 3 * (response === play);
+  return response + 6 * (response === inc(play)) + 3 * (response === play);
 }
 
 const scores = encrypted_list
