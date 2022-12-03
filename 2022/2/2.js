@@ -37,10 +37,41 @@ function round_score(play, response) {
   return response + 6 * (response === inc(play)) + 3 * (response === play);
 }
 
-const scores = encrypted_list
+const scores_1 = encrypted_list
   .map(([a, b]) => [map_plays[a], map_plays[b]]) // maps each column
   .map(round => round_score(...round));
 
-const total_score = scores.reduce((prev, curr) => Number(prev) + Number(curr), 0);
+const total_score_1 = scores_1.reduce((prev, curr) => Number(prev) + Number(curr), 0);
 
-console.log(total_score);
+console.log(total_score_1);
+
+
+/* ======== Part one ======== */
+
+// This part can be solved just by mapping the round's elements [play, game_result] 
+// into the map_plays enumeration, by first mapping game_result to the appropiate response.
+// Now a decrement function is needed to map a losing response.
+
+function dec(n) {
+  if (n <= 1) return 3;
+  else return n - 1;
+}
+
+function map_round_response(round) {
+  const play = map_plays[round[0]];
+  const game_result = round[1]
+
+  switch(game_result) {
+    case 'X': return dec(play);
+    case 'Y': return play;
+    case 'Z': return inc(play);
+  }
+}
+
+const scores_2 = encrypted_list
+  .map(([a, b]) => [map_plays[a], map_round_response([a, b])]) // maps each column
+  .map(round => round_score(...round));
+
+const total_score_2 = scores_2.reduce((prev, curr) => Number(prev) + Number(curr), 0);
+
+console.log(total_score_2);
