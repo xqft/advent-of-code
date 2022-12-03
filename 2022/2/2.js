@@ -46,7 +46,7 @@ const total_score_1 = scores_1.reduce((prev, curr) => Number(prev) + Number(curr
 console.log(total_score_1);
 
 
-/* ======== Part one ======== */
+/* ======== Part two ======== */
 
 // This part can be solved just by mapping the round's elements [play, game_result] 
 // into the map_plays enumeration, by first mapping game_result to the appropiate response.
