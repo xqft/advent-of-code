@@ -21,7 +21,7 @@ const input_matrix = input[0]
     .map(char => char.charAt(1))  // select only the letter (second char)
   );
 
-const stacks = transpose(input_matrix)
+const input_stacks = transpose(input_matrix)
   .map(row => row.filter(elem => elem.match(/[A-Z]/)).reverse());
   // empty slots get filtered and arrays reversed so LIFO is possible.
 
@@ -39,13 +39,44 @@ function popn(array, n) {
   return result;
 }
 
-for (const instruction of instructions) {
-  const [ count, origin_id, receiver_id ] = instruction;
+function cratemover_9000(stacks) {
+  const stacks_clone = stacks.map(stack => stack.slice());
 
-  const origin    = stacks[origin_id - 1];
-  const receiver  = stacks[receiver_id - 1];
+  for (const instruction of instructions) {
+    const [ count, origin_id, receiver_id ] = instruction;
 
-  receiver.push(...popn(origin, count));
+    const origin    = stacks_clone[origin_id - 1];
+    const receiver  = stacks_clone[receiver_id - 1];
+
+    receiver.push(...popn(origin, count));
+  }
+
+  return stacks_clone;
 }
 
-console.log(stacks.map(stack => stack.pop()));
+const transformed_stacks = cratemover_9000(input_stacks);
+console.log(transformed_stacks.map(stack => stack.pop()));
+
+
+/* ======== Part two ======== */
+
+
+function cratemover_9001(stacks) {
+  const stacks_clone = stacks.map(stack => stack.slice());
+
+  for (const instruction of instructions) {
+    const [ count, origin_id, receiver_id ] = instruction;
+
+    const origin    = stacks_clone[origin_id - 1];
+    const receiver  = stacks_clone[receiver_id - 1];
+
+    receiver.push(...popn(origin, count).reverse());
+    // difference with 9000 version      ^^^^^^^^^
+  }
+
+  return stacks_clone;
+}
+
+const actual_transformed_stacks = cratemover_9001(input_stacks);
+console.log(actual_transformed_stacks.map(stack => stack.pop()));
+
