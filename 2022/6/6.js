@@ -6,13 +6,27 @@ const fs = require("fs");
 
 const input = fs.readFileSync("./input.txt").toString().trimEnd().split('');
 
-function check_marker(arr) {
-  for (let i = 4; i <= arr.length; i++) {
-    const set = new Set(arr.slice(i - 4, i));
-    if (set.size === 4) return i;
+function check_marker(arr, size) {
+  for (let i = size; i <= arr.length; i++) {
+    const set = new Set(arr.slice(i - size, i));
+    if (set.size === size) return i;
   }
 
   return NaN;
 }
 
-console.log(check_marker(input));
+function check_start_of_packet(input) {
+  return check_marker(input, 4); 
+}
+
+console.log(check_start_of_packet(input));
+
+
+/* ======== Part two ======== */
+
+
+function check_start_of_msg(input) {
+  return check_marker(input, 14); 
+}
+
+console.log(check_start_of_msg(input));
