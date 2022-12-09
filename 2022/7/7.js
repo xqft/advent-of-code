@@ -26,7 +26,7 @@ class PathStack {
   }
 
   get path() {
-    return this.data.join('/');
+    return this.data.join('/') || '/';
   }
   
   push(path) {
@@ -85,9 +85,30 @@ for (const [index, cmd_chunk] of cmd_chunks.entries()) {
     }
   }
 }
+// final stack unfolding
+let prev_dir_size = dirs.get(pwd.path).size;
+while (pwd.pop() !== '/') {
+  dirs.get(pwd.path).size += prev_dir_size;
+  prev_dir_size = dirs.get(pwd.path).size;
+}
 
 console.log(dirs
     .map(dir => dir.size)
     .filter(size => size <= 100_000)
     .reduce((accum, curr) => accum + curr, 0)
 );
+
+
+/* ======== Part two ======== */
+
+
+const total     = 70_000_000;
+const used      = dirs.get("/").size;
+const necessary = 30_000_000;
+
+const to_free = Math.max(necessary - (total - used), 0);
+const to_delete = dirs
+  .map(dir => dir.size)
+  .filter(size => size >= to_free);
+
+console.log(Math.min(...to_delete));
