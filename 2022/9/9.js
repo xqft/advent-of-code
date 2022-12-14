@@ -12,12 +12,20 @@ class Vector {
     this.y = y;
   }
 
-  static distance(v, w) { // vector space of 'norm-infinite', Chebyshev distance
-    return Math.max(Math.abs(v.x - w.x), Math.abs(v.y - w.y))
+  norm() {
+    return Math.max(Math.abs(this.x), Math.abs(this.y));
   }
 
-  static sum(v, w) {
-    return new Vector(v.x + w.x, v.y + w.y);
+  sum(w) {
+    return new Vector(this.x + w.x, this.y + w.y);
+  }
+
+  distance(w) { // vector space of 'norm-infinite', Chebyshev distance
+    return this.sum(w.multiply(-1)).norm();
+  }
+
+  multiply(k) {
+    return new Vector(this.x * k, this.y * k)
   }
 }
 
@@ -51,21 +59,60 @@ function make_unique(n, m) {
 // eliminating its sign (this is so .join('') doesn't return a string like "14-345", which
 // can't be parsed into a number).
 
-let head = new Vector(0, 0);
-let tail = new Vector(0, 0);
+// returns the closest adjacent cell (up, down, left, right) of w respect to v.
+function closest_adjacent(v, w) {
+  const cells = new Map(
+    Array.from(move_vec)
+    .map(([key, value]) => [value.sum(w).distance(v), value.sum(w)]));
 
-let visited_positions = new Set();
+  const min_distance = Math.min(...cells.keys())
 
-for (const { dir, count } of movements) {
-  for (let i = 0; i < count; i++) {
-    const new_head = Vector.sum(head, dir);
-
-    if (Vector.distance(new_head, tail) > 1)
-      tail = head;
-
-    head = new_head
-    visited_positions.add(make_unique(tail.x, tail.y));
-  }
+  return cells.get(min_distance);
 }
 
-console.log(visited_positions.size);
+{
+  let head = new Vector(0, 0);
+  let tail = new Vector(0, 0);
+
+  let visited_positions = new Set();
+
+  for (const { dir, count } of movements) {
+    for (let i = 0; i < count; i++) {
+      head = head.sum(dir);
+
+      if (head.distance(tail) > 1)
+        tail = closest_adjacent(tail, head);
+
+      visited_positions.add(make_unique(tail.x, tail.y));
+    }
+  }
+
+  console.log(visited_positions.size);
+}
+
+
+/* ======== Part two ======== */
+
+
+{
+  let knots = Array(10).fill().map(_ => new Vector(0, 0));
+
+  let visited_positions = new Set();
+
+  for (const { dir, count } of movements) {
+    for (let n = 0; n < count; n++) {
+      knots[0] = knots[0].sum(dir); // head
+
+      for (let i = 1; i <= 9; i++)
+        if (knots[i].distance(knots[i - 1]) > 1)
+          knots[i] = closest_adjacent(knots[i], knots[i - 1]);
+
+      visited_positions.add(make_unique(knots[9].x, knots[9].y));
+//      console.log(knots[0])
+    }
+  }
+
+  console.log(visited_positions.size);
+}
+
+// i've been stuck with this for a while, second part is not giving the correct answer.
